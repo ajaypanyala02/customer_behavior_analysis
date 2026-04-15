@@ -14,7 +14,8 @@ where discount_applied = 'Yes' and purchase_amount >= (select AVG(purchase_amoun
 
 -- which are the top 5 products with the highest avg review rating
 
-select item_purchased, round(avg(review_rating),2) as ' Avarage Product Rating'
+select item_purchased, 
+	round(avg(review_rating),2) as ' Avarage Product Rating'
 from customer_data
 group by item_purchased
 order by avg(review_rating) desc
@@ -23,7 +24,7 @@ limit 5;
 -- compare the avg purchase amount btw standard and express shipping.
 
 select shipping_type,
-round(avg(purchase_amount),2)
+	round(avg(purchase_amount),2)
 from customer_data
 where shipping_type in ('Standard' , 'Express')
 group by shipping_type;
@@ -33,8 +34,8 @@ group by shipping_type;
 
 select subscription_status,
 count(customer_id) as total_customers,
-round(avg(purchase_amount),2) as avg_spend,
-round(sum(purchase_amount),2)as total_revenue
+	round(avg(purchase_amount),2) as avg_spend,
+	round(sum(purchase_amount),2)as total_revenue
 from customer_data
 group by subscription_status
 order by total_revenue, avg_spend desc;
@@ -61,19 +62,20 @@ case
     end as customer_segment
 from customer_data
 )
-select customer_segment, count(*) as 'Number of Customers'
+select customer_segment, 
+	count(*) as 'Number of Customers'
 from customer_type
 group by customer_segment;
 
 -- what are the top 3 most purchesed product whithin each category?
 
 with item_counts as(
-select category,
-item_purchased,
-count(customer_id) as total_orders,
-row_number() over(partition by category order by count(customer_id) desc) as item_rank
-from customer_data
-group by category, item_purchased
+	select category,
+	item_purchased,
+		count(customer_id) as total_orders,
+		row_number() over(partition by category order by count(customer_id) desc) as item_rank
+	from customer_data
+	group by category, item_purchased
 )
 select item_rank, category,item_purchased, total_orders
 from item_counts
